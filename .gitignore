@@ -1,0 +1,12 @@
+# dependencies
+node_modules/
+
+# env files
+.env
+
+# playwright
+playwright-report/
+test-results/
+
+# misc
+.DS_Store

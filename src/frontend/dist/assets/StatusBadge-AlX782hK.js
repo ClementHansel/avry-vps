@@ -1,0 +1,1 @@
+import{d as t,o as e,c as o,n,a as r,f as c,t as d,_ as l}from"./index-COf5G_pa.js";const p=t({__name:"StatusBadge",props:{status:{}},setup(s){return(u,a)=>(e(),o("span",{class:n(["status-badge",s.status])},[a[0]||(a[0]=r("span",{class:"dot"},null,-1)),c(" "+d(s.status),1)],2))}}),_=l(p,[["__scopeId","data-v-200a9072"]]);export{_ as S};

@@ -1,0 +1,64 @@
+services:
+  vps-panel:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: aivory-vps-panel:latest
+    container_name: aivory-vps-panel
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:${PORT:-3000}"
+    volumes:
+      # Docker socket for container management of sibling containers
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Persistent SQLite database storage
+      - panel-data:/app/data
+      # VPS project root for file browser and compose detection
+      - /opt/aivery:/opt/aivery
+      # Nginx config for domain/reverse proxy management
+      - /etc/nginx:/etc/nginx
+      # SSL certificates storage
+      - ssl-certs:/etc/ssl/vps-panel
+      # Crontab access for cron manager
+      - /var/spool/cron:/var/spool/cron
+    environment:
+      - PORT=${PORT:-3000}
+      - SUPABASE_JWT_SECRET=${SUPABASE_JWT_SECRET:?SUPABASE_JWT_SECRET is required}
+      - DOCKER_HOST=/var/run/docker.sock
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - DB_PATH=/app/data/panel.db
+      - CORS_ORIGINS=${CORS_ORIGINS:-*}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - ALERT_WEBHOOK_URL=${ALERT_WEBHOOK_URL:-}
+      - BACKUP_S3_ENDPOINT=${BACKUP_S3_ENDPOINT:-}
+      - BACKUP_S3_BUCKET=${BACKUP_S3_BUCKET:-}
+      - BACKUP_S3_ACCESS_KEY=${BACKUP_S3_ACCESS_KEY:-}
+      - BACKUP_S3_SECRET_KEY=${BACKUP_S3_SECRET_KEY:-}
+    networks:
+      - aivery-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT:-3000}/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  panel-data:
+    driver: local
+  ssl-certs:
+    driver: local
+
+networks:
+  aivery-network:
+    external: true

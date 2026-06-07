@@ -1,0 +1,12 @@
+node_modules
+dist
+src/frontend/node_modules
+src/frontend/dist
+tests
+.git
+.env
+*.log
+.vscode
+.kiro
+coverage
+playwright-report
